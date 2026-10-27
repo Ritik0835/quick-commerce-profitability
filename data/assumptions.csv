@@ -1,0 +1,13 @@
+metric,company,value,unit,reporting_period,publication_date,source_url,document_page,status,definition_or_notes
+Average order value,Swiggy Instamart,708,INR/order,Q2 FY27,22 October 2026,https://www.swiggy.com/corporate/wp-content/uploads/2026/10/Covering-Letter_Letter-to-Shareholders-Signed.pdf,7,Reported,AOV as defined in the company shareholder letter
+Net average order value,Swiggy Instamart,506,INR/order,Q2 FY27,22 October 2026,https://www.swiggy.com/corporate/wp-content/uploads/2026/10/Covering-Letter_Letter-to-Shareholders-Signed.pdf,7,Reported,nAOV as defined in the company shareholder letter
+Orders per dark store per day,Swiggy Instamart,1192,orders/store/day,Q2 FY27,22 October 2026,https://www.swiggy.com/corporate/wp-content/uploads/2026/10/Covering-Letter_Letter-to-Shareholders-Signed.pdf,7,Reported,Company-reported operating metric
+Active dark stores,Swiggy Instamart,1240,stores,Q2 FY27,22 October 2026,https://www.swiggy.com/corporate/wp-content/uploads/2026/10/Covering-Letter_Letter-to-Shareholders-Signed.pdf,7,Reported,Active dark stores at quarter end
+Contribution margin,Swiggy Instamart,-1.0,% of GOV,Q2 FY27,22 October 2026,https://www.swiggy.com/corporate/wp-content/uploads/2026/10/Covering-Letter_Letter-to-Shareholders-Signed.pdf,4,Reported,Contribution margin denominator is GOV
+Net order value (NOV),Eternal Blinkit,20940,INR crore,Q2 FY27,21 October 2026,https://www.eternal.com/blog/q2fy27/,13,Reported,Quarterly quick-commerce NOV as reported in the company results
+Active dark stores,Eternal Blinkit,2751,stores,Q2 FY27,21 October 2026,https://www.eternal.com/blog/q2fy27/,13,Reported,Store count at the end of the reporting period
+Net average order value (NAOV),Eternal Blinkit,525,INR/order,Q2 FY27,21 October 2026,https://www.eternal.com/blog/q2fy27/,13,Reported,Company-reported net average order value
+NOV per store per day,Eternal Blinkit,902000,INR/store/day,Q2 FY27,21 October 2026,https://www.eternal.com/blog/q2fy27/,13,Reported,Average NOV per day per store
+Orders per store per day,Eternal Blinkit,1718,orders/store/day,Q2 FY27,21 October 2026,https://www.eternal.com/blog/q2fy27/,13,Derived,Approximation calculated as 902000 divided by 525; not directly reported
+Contribution margin,Eternal Blinkit,5.3,% of NOV,Q2 FY27,21 October 2026,https://www.eternal.com/blog/q2fy27/,13,Reported,Contribution margin denominator is NOV
+Adjusted EBITDA margin,Eternal Blinkit,0.9,% of NOV,Q2 FY27,21 October 2026,https://www.eternal.com/blog/q2fy27/,6,Reported,Adjusted EBITDA margin is distinct from contribution margin
