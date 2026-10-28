@@ -1,30 +1,32 @@
 # Metric definitions (Project day 1)
 
-Companies do not define these the same way. Every figure in `data/assumptions.csv` is the company's own number, so read this file before comparing Blinkit and Instamart.
+Every figure in `data/assumptions.csv` is checked against the company's own Q2 FY27 shareholder letter (page numbers are in the CSV) unless `primary_doc_verified` says `no`. The two companies do not define metrics the same way, so read this before comparing them.
 
-## What each company reports
+## How each company defines the key terms (from the letters' glossaries)
 
 | Term | Blinkit (Eternal) | Swiggy Instamart |
 |---|---|---|
-| Order value basis | NOV (net order value) is the headline | GOV (gross) and NOV both reported |
-| Average order value | Net average order value (NAOV), after discounts | Net AOV (NOV / orders). GOV per order is higher (~INR 708 vs 506) |
-| Contribution margin denominator | % of NOV in the Q1/Q2 FY27 letters | % of GOV |
-| Contribution includes | Delivery, warehousing, wastage, packaging, customer acquisition, payment charges (per IndMoney summary of the letter) | Adjusted revenue minus order-level costs: delivery, fulfilment, dark store (per Inc42) |
-| Store count | Active dark stores, end of period | Dark stores, end of period |
-| Revenue model | Moved from marketplace to inventory-led (1P) from Q1 FY26, so revenue growth is not like-for-like (78% reported vs 58% like-for-like) | Marketplace today, pivot to inventory model planned from mid-Q3 FY27 |
+| Orders | All orders placed, **including cancelled orders** | **Completed orders only** |
+| GOV | Order value at MRP, before any discounts, plus delivery, handling, packaging fees and taxes | Same idea: MRP-based, before discounts, plus delivery, packaging, user fees and taxes |
+| NOV | GOV less all discounts (brand, seller, platform, bank) | GOV less all discounts (platform or partner funded) |
+| Headline order value | Net AOV (NAOV) = NOV / orders | Net AOV (nAOV) = NOV / orders, and AOV on GOV basis is also shown |
+| Contribution margin denominator | % of **NOV** | % of **GOV** |
+| Contribution built as | Adjusted Revenue less COGS on owned inventory, dark store operations (including actual rent), last mile, warehouses, middle mile, customer acquisition subsidies, wastage, refunds, packaging, payment gateway, support, onboarding, cash handling, misc | Adjusted Revenue less delivery, platform-funded discounts, fulfilment services, other variable costs |
+| Revenue model | Inventory-led (1P) for much of sales since Q1 FY26, so revenue includes full goods value | Marketplace today. Inventory model starts mid-Q3 FY27 (about +80 bps contribution) |
+| Orders per store per day | Not disclosed. NOV per store per day is (simple average per day over stores operational each day) | Disclosed: orders per dark store per day, on active store-days |
 
-## Why this matters
+## What this means for the model
 
-1. **NOV vs GOV.** Blinkit contribution of 5.3% of NOV and Instamart contribution of -1.0% of GOV are not the same scale. Instamart's NOV is about 71% of GOV (6,594 / 9,230), so -1.0% of GOV is roughly -1.4% of NOV. Convert before comparing.
-2. **1P vs marketplace.** Under an inventory model the company books product margin as its own, so gross margin and contribution look higher without the customer paying more. Instamart's own pivot will make its future numbers non-comparable with its past.
-3. **Cancellations.** Swiggy adjusts food delivery GOV for cancellations in some disclosures. I did not find a clear statement of treatment for Blinkit or Instamart orders. Open item: check the letters.
-4. **Store counts and productivity.** Neither company publishes orders per store per day in the headline tables, so the figures in this project are derived (orders / average stores / 92 days). Average stores smooth over openings during the quarter.
+1. **Convert denominators before comparing.** Instamart NOV is 71% of GOV, so -1.0% of GOV is about -1.4% of NOV. Blinkit's +5.3% is already on NOV.
+2. **Cancellations.** Blinkit counts cancelled orders in its order count and Instamart counts only completed ones, so order counts and average order values are not strictly like-for-like. The effect size is not disclosed.
+3. **Marketplace vs inventory.** Blinkit's contribution sits after COGS on owned inventory, while Instamart's is a marketplace take-rate view. Instamart's own margin will shift when it moves to inventory, so do not extrapolate from old quarters.
+4. **Derived figures.** Orders per store per day for Blinkit (1,718) and contribution per order for both companies are my calculations, labelled `derived`.
 
 ## Project definitions (use these in the Excel model)
 
-- **Order value (OV):** net order value per order, after discounts, excluding delivery and handling fees, in INR. Gross figures are only used when a source gives nothing else, and are labelled.
-- **Orders per store per day (OPD):** quarterly orders / average of opening and closing store count / days in quarter.
-- **Contribution margin (CM):** revenue after all order-level costs (delivery, dark store running cost, packaging, wastage, payment), before central costs, marketing brand spend and technology. Always stated as % of NOV in this project. Swiggy's GOV-based figures are converted using the NOV/GOV ratio.
+- **Order value (OV):** net order value per order (NOV / orders), in INR. GOV-based figures are converted using the NOV/GOV ratio.
+- **Orders per store per day (OPD):** orders divided by store-days. For Blinkit, derived as NOV per store per day / NAOV.
+- **Contribution margin (CM):** order-level profit after variable costs and store running costs, before central costs and brand marketing. Always shown as % of NOV in this project.
 - **Contribution per order:** CM% x NOV per order, in INR.
-- **Break-even:** the point where contribution per order covers store fixed cost per order at a given OPD.
-- **Labels:** every figure is `reported` (company disclosed) or `derived` (my calculation). Scenarios built on them are scenarios, not measurements.
+- **Break-even:** contribution per order covers store fixed cost per order at a given OPD. Reference point: Swiggy states break-even needs about INR 30 contribution per order.
+- **Labels:** every figure is `reported` or `derived`. Scenarios built on them are scenarios, not measurements.
