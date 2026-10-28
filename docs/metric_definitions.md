@@ -30,3 +30,9 @@ Every figure in `data/assumptions.csv` is checked against the company's own Q2 F
 - **Contribution per order:** CM% x NOV per order, in INR.
 - **Break-even:** contribution per order covers store fixed cost per order at a given OPD. Reference point: Swiggy states break-even needs about INR 30 contribution per order.
 - **Labels:** every figure is `reported` or `derived`. Scenarios built on them are scenarios, not measurements.
+
+## CM1 and CM2 (Day 2 model)
+
+CM1 is what an order earns after the product and the discounts, meaning net order value less product cost (the seller's or supplier's share), plus the ad income and customer fees the platform collects, less platform-funded discounts. CM2 is CM1 less the variable cost of fulfilling the order: picking, packing, last-mile delivery, and payment and other per-order costs. Dark store fixed costs (rent, fixed staff, utilities) sit below CM2 and are spread over the day's orders; CM2 less that charge is the store contribution per order, which matches the way the companies report contribution. Central costs such as technology, brand marketing and corporate overhead are excluded.
+
+The model's totals are anchored to Swiggy Instamart's Q2 FY27 letter (adjusted revenue per order about INR 100, contribution about -INR 7 per order). How those totals split across individual cost lines is not disclosed by any company, so the split is a labelled synthetic allocation on the Assumptions sheet (section 3).
