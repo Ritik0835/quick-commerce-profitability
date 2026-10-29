@@ -34,8 +34,18 @@ All results will be presented as scenario estimates, not actual company measurem
 
 ## Scope and Limitations
 
-- Synthetic data will be clearly identified as synthetic.
-- Key financial assumptions will include a source link and publication date.
-- Findings will be labeled as modeled scenarios rather than measured outcomes.
-- LTV/CAC analysis is excluded.
-- Results depend on the assumptions used and should not be interpreted as forecasts or guarantees of actual business performance.
+## Scope and Limitations
+
+- All generated operational records are synthetic and do not represent actual company transactions.
+- Company-reported metrics are reference benchmarks, not evidence that the synthetic dataset represents actual company operations.
+- The generator uses programmed assumptions for demand patterns, peak hours, weekday/weekend differences, stockout periods, and rain delays.
+- **Important methodological limitation:** SQL analysis may rediscover patterns deliberately built into the generator. For example, longer delivery times during simulated rain-delay windows are a consequence of the generation rules, not independent evidence that rain causes a specific real-world delay.
+- Structural validation checks record counts, relationships, and arithmetic consistency. It does not establish that simulated behaviour matches real-world operations.
+- Findings are modeled scenarios under documented assumptions, not measured company performance, causal proof, forecasts, or guaranteed outcomes.
+- Customer lifetime value (LTV) and customer acquisition cost (CAC) analysis is excluded because reliable public marketing-spend-per-customer data is unavailable.
+
+## Dataset Documentation
+
+- [`docs/data_dictionary.md`](docs/data_dictionary.md) — table schemas, column meanings, and relationships.
+- [`docs/data_note.md`](docs/data_note.md) — generation rules, reproducibility, intended uses, and limitations.
+- [`docs/company_assumptions.md`](docs/company_assumptions.md) — company-disclosed benchmarks and their definitions.
