@@ -6,6 +6,7 @@ order_items, dark_stores, and delivery_logs. Every generated row is synthetic.
 """
 from __future__ import annotations
 import argparse, csv, random, math
+from itertools import accumulate
 from datetime import date, datetime, time, timedelta
 from pathlib import Path
 
@@ -78,6 +79,7 @@ def main():
     min_order_value = number(rows, "S30")
     open_hour = int(number(rows, "S31"))
     close_hour = int(number(rows, "S32"))
+    segment_weight = {"new": number(rows, "S33"), "regular": number(rows, "S34"), "high_frequency": number(rows, "S35")}
     naov = number(rows, "I01")
 
     if total_orders <= 0 or store_count < 1 or days < 1 or customer_count < 1:
@@ -125,15 +127,22 @@ def main():
     customers = []
     for i in range(1, customer_count + 1):
         reg_offset = rng.randint(0, 365)
+        home_store = rng.choices(store_ids, weights=store_factors, k=1)[0]
         customers.append({
             "customer_id": f"CUST_{i:06d}",
             "signup_date": (start_date - timedelta(days=reg_offset)).isoformat(),
-            "home_city": f"Synthetic_City_{rng.randint(1,4)}",
+            "home_store_id": home_store,
+            "home_city": next(s["city"] for s in stores if s["store_id"] == home_store),
             "customer_segment": rng.choices(["new", "regular", "high_frequency"], weights=[0.45, 0.45, 0.10], k=1)[0],
             "synthetic_data_flag": "YES"
         })
     customer_ids = [c["customer_id"] for c in customers]
-
+    pool_ids = {sid: [] for sid in store_ids}
+    pool_weights = {sid: [] for sid in store_ids}
+    for c in customers:
+        pool_ids[c["home_store_id"]].append(c["customer_id"])
+        pool_weights[c["home_store_id"]].append(segment_weight[c["customer_segment"]])
+    pool_cum = {sid: list(accumulate(w)) for sid, w in pool_weights.items()}
     # Distribute exactly total_orders across dates, weighted for weekday/weekend demand.
     day_weights = []
     for d in date_list:
@@ -157,7 +166,7 @@ def main():
         d = date_list[day_idx]
         store_idx = rng.choices(range(store_count), weights=store_factors, k=1)[0]
         store_id = store_ids[store_idx]
-        customer_id = rng.choice(customer_ids)
+        customer_id = rng.choices(pool_ids[store_id], cum_weights=pool_cum[store_id], k=1)[0]
         hour = pick_hour(rng, peak_hour_weight, open_hour, close_hour)
         minute = rng.randrange(60)
         second = rng.randrange(60)
@@ -226,9 +235,9 @@ def main():
             "order_id": f"ORD_{i:07d}",
             "store_id": store_id,
             "order_ts": order_dt.isoformat(sep=" "),
-            "dispatch_ts": dispatch_dt.isoformat(sep=" "),
-            "delivered_ts": delivered_dt.isoformat(sep=" "),
-            "delivery_duration_minutes": delivery_minutes,
+            "dispatch_ts": "" if status == "cancelled" else dispatch_dt.isoformat(sep=" "),
+            "delivered_ts": "" if status == "cancelled" else delivered_dt.isoformat(sep=" "),
+            "delivery_duration_minutes": "" if status == "cancelled" else delivery_minutes,
             "rain_delay_period": "YES" if rain_day else "NO",
             "rain_delayed": "YES" if rain_delayed else "NO",
             "delivery_status": "delivered" if status == "delivered" else status,
@@ -242,7 +251,7 @@ def main():
         s["rain_delay_windows"] = format_windows(rain_windows)
 
     write_csv(outdir / "customers.csv",
-              ["customer_id","signup_date","home_city","customer_segment","synthetic_data_flag"], customers)
+              ["customer_id","signup_date","home_store_id","home_city","customer_segment","synthetic_data_flag"], customers)
     write_csv(outdir / "orders.csv",
               ["order_id","customer_id","store_id","order_ts","order_date","order_hour","day_of_week","day_type","order_value_inr","order_status","stockout_period","stockout_affected","rain_delay_period","rain_delayed","synthetic_data_flag"], orders)
     write_csv(outdir / "order_items.csv",
