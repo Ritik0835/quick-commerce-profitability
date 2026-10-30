@@ -7,6 +7,7 @@ order_items, dark_stores, and delivery_logs. Every generated row is synthetic.
 from __future__ import annotations
 import argparse, csv, random, math
 from itertools import accumulate
+from collections import Counter
 from datetime import date, datetime, time, timedelta
 from pathlib import Path
 
@@ -250,16 +251,63 @@ def main():
         s["stockout_windows"] = format_windows(stockout_windows)
         s["rain_delay_windows"] = format_windows(rain_windows)
 
+    # ---- Step 4: revenue and cost columns, scaled per delivered order to company-anchored targets ----
+    adj_po = number(rows, "I17") * 1e7 / (number(rows, "I02") * 1e6)
+    gov_po = number(rows, "I03") * 1e7 / (number(rows, "I02") * 1e6)
+    cost_po = adj_po - number(rows, "I07") / 100 * gov_po
+    targets = {
+        "product_margin_inr": number(rows, "S22") * adj_po,
+        "ad_income_inr": number(rows, "S23") * adj_po,
+        "customer_fee_inr": (1 - number(rows, "S22") - number(rows, "S23")) * adj_po,
+        "platform_discount_inr": number(rows, "S24") * cost_po,
+        "rider_payout_inr": number(rows, "S25") * cost_po,
+        "picking_packing_cost_inr": number(rows, "S26") * cost_po,
+        "payment_cost_inr": number(rows, "S27") * cost_po,
+    }
+    coupon_share = number(rows, "S36")
+    noise = number(rows, "S37")
+    time_sens = number(rows, "S38")
+    rng2 = random.Random(seed + 1)
+    lines_per_order = Counter(it["order_id"] for it in order_items)
+    raw = {name: [0.0] * len(orders) for name in targets}
+    for k, o in enumerate(orders):
+        if o["order_status"] != "delivered":
+            continue
+        raw["product_margin_inr"][k] = o["order_value_inr"] * rng2.lognormvariate(0, noise / 2)
+        raw["ad_income_inr"][k] = rng2.lognormvariate(0, noise)
+        raw["customer_fee_inr"][k] = rng2.lognormvariate(0, noise / 2)
+        raw["platform_discount_inr"][k] = rng2.lognormvariate(0, noise) if rng2.random() < coupon_share else 0.0
+        raw["picking_packing_cost_inr"][k] = lines_per_order[o["order_id"]]
+        raw["payment_cost_inr"][k] = o["order_value_inr"]
+        raw["rider_payout_inr"][k] = (1 - time_sens) + time_sens * delivery_logs[k]["delivery_duration_minutes"] / normal_delivery_minutes
+    delivered_idx = [k for k, o in enumerate(orders) if o["order_status"] == "delivered"]
+    calibration_lines = []
+    for name, target in targets.items():
+        factor = target / (sum(raw[name][k] for k in delivered_idx) / len(delivered_idx))
+        for k in delivered_idx:
+            value = round(raw[name][k] * factor, 2)
+            if name == "rider_payout_inr":
+                delivery_logs[k][name] = value
+            else:
+                orders[k][name] = value
+        calibration_lines.append(f"{name}: target {target:.2f} per delivered order")
+    for k, o in enumerate(orders):
+        if o["order_status"] != "delivered":
+            delivery_logs[k]["rider_payout_inr"] = 0.0
+            for name in targets:
+                if name != "rider_payout_inr":
+                    o[name] = 0.0
+
     write_csv(outdir / "customers.csv",
               ["customer_id","signup_date","home_store_id","home_city","customer_segment","synthetic_data_flag"], customers)
     write_csv(outdir / "orders.csv",
-              ["order_id","customer_id","store_id","order_ts","order_date","order_hour","day_of_week","day_type","order_value_inr","order_status","stockout_period","stockout_affected","rain_delay_period","rain_delayed","synthetic_data_flag"], orders)
+              ["order_id","customer_id","store_id","order_ts","order_date","order_hour","day_of_week","day_type","order_value_inr","order_status","stockout_period","stockout_affected","rain_delay_period","rain_delayed","product_margin_inr","ad_income_inr","customer_fee_inr","platform_discount_inr","picking_packing_cost_inr","payment_cost_inr","synthetic_data_flag"], orders)
     write_csv(outdir / "order_items.csv",
               ["order_item_id","order_id","product_id","product_category","quantity","unit_price_inr","line_total_inr","stockout_affected","synthetic_data_flag"], order_items)
     write_csv(outdir / "dark_stores.csv",
               ["store_id","store_name","city","opened_date","store_size_sqft","daily_fixed_cost_inr","stockout_windows","rain_delay_windows","synthetic_data_flag"], stores)
     write_csv(outdir / "delivery_logs.csv",
-              ["delivery_log_id","order_id","store_id","order_ts","dispatch_ts","delivered_ts","delivery_duration_minutes","rain_delay_period","rain_delayed","delivery_status","synthetic_data_flag"], delivery_logs)
+              ["delivery_log_id","order_id","store_id","order_ts","dispatch_ts","delivered_ts","delivery_duration_minutes","rain_delay_period","rain_delayed","delivery_status","rider_payout_inr","synthetic_data_flag"], delivery_logs)
 
     # Basic data quality checks, also written for project evidence.
     assert len(orders) == total_orders
@@ -277,6 +325,7 @@ def main():
         f.write(f"rain_delay_windows={format_windows(rain_windows)}\n")
         f.write("checks=PASS: unique order IDs; all order customer/store references valid; one delivery log per order\n")
         f.write("note=All generated rows are synthetic and are not company-reported daily data.\n")
+        f.write("".join(line + "\n" for line in calibration_lines))
     print(f"Generated {len(customers):,} customers, {len(orders):,} orders, {len(order_items):,} order_items, {len(stores)} dark_stores, and {len(delivery_logs):,} delivery_logs.")
     print(f"Date range: {start_date.isoformat()} to {end_date.isoformat()} ({days} days); seed={seed}.")
     print(f"Stockout windows: {format_windows(stockout_windows)}")

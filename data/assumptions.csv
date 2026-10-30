@@ -70,3 +70,6 @@ S32,Synthetic model,store_last_order_hour,22,hour of day,operating hours,synthet
 S33,Synthetic model,segment_order_weight_new,0.5,relative weight,customer behaviour,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Relative chance that a new customer is picked for an order
 S34,Synthetic model,segment_order_weight_regular,1.0,relative weight,customer behaviour,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Relative chance that a regular customer is picked for an order
 S35,Synthetic model,segment_order_weight_high_frequency,4.0,relative weight,customer behaviour,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Relative chance that a high-frequency customer is picked for an order
+S36,Synthetic model,coupon_order_share,0.35,share of orders,revenue and cost,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Share of delivered orders that carry a platform-funded coupon
+S37,Synthetic model,order_noise_sigma,0.30,lognormal sigma,revenue and cost,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Order-to-order variation in margin and ads and fees and coupons
+S38,Synthetic model,delivery_cost_time_sensitivity,0.40,share,revenue and cost,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Share of rider payout that grows with delivery minutes
