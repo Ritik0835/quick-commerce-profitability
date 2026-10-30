@@ -67,3 +67,6 @@ S29,Synthetic model,return_share,0.010,share of orders,order status,synthetic as
 S30,Synthetic model,minimum_order_value_inr,80,INR,order value,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Smallest basket the generator will create
 S31,Synthetic model,store_open_hour,8,hour of day,operating hours,synthetic assumption,Project modeling assumption,,,,2026-10-29,,First hour in which orders can be placed
 S32,Synthetic model,store_last_order_hour,22,hour of day,operating hours,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Last hour in which orders can be placed (inclusive)
+S33,Synthetic model,segment_order_weight_new,0.5,relative weight,customer behaviour,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Relative chance that a new customer is picked for an order
+S34,Synthetic model,segment_order_weight_regular,1.0,relative weight,customer behaviour,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Relative chance that a regular customer is picked for an order
+S35,Synthetic model,segment_order_weight_high_frequency,4.0,relative weight,customer behaviour,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Relative chance that a high-frequency customer is picked for an order
