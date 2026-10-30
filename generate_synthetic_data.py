@@ -38,11 +38,11 @@ def write_csv(path, fields, rows):
         writer.writeheader()
         writer.writerows(rows)
 
-def pick_hour(rng, peak_weight):
+def pick_hour(rng, peak_weight, open_hour, close_hour):
     # Peak windows: lunch (12-14) and dinner (18-21). Other hours have weight 1.
-    weights = [peak_weight if h in (12, 13, 18, 19, 20) else (1.5 if h in (11, 14, 17, 21) else 1.0) for h in range(8, 23)]
-    return rng.choices(list(range(8, 23)), weights=weights, k=1)[0]
-
+    hours = list(range(open_hour, close_hour + 1))
+    weights = [peak_weight if h in (12, 13, 18, 19, 20) else (1.5 if h in (11, 14, 17, 21) else 1.0) for h in hours]
+    return rng.choices(hours, weights=weights, k=1)[0]
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--assumptions", default="data/assumptions.csv")
@@ -73,7 +73,12 @@ def main():
     delivery_noise = number(rows, "S19")
     stockout_order_probability = number(rows, "S20")
     store_share_cv = number(rows, "S21")
-    naov = number(rows, "B01")
+    cancel_share = number(rows, "S28")
+    return_share = number(rows, "S29")
+    min_order_value = number(rows, "S30")
+    open_hour = int(number(rows, "S31"))
+    close_hour = int(number(rows, "S32"))
+    naov = number(rows, "I01")
 
     if total_orders <= 0 or store_count < 1 or days < 1 or customer_count < 1:
         raise ValueError("Order, store, day, and customer counts must be positive")
@@ -153,7 +158,7 @@ def main():
         store_idx = rng.choices(range(store_count), weights=store_factors, k=1)[0]
         store_id = store_ids[store_idx]
         customer_id = rng.choice(customer_ids)
-        hour = pick_hour(rng, peak_hour_weight)
+        hour = pick_hour(rng, peak_hour_weight, open_hour, close_hour)
         minute = rng.randrange(60)
         second = rng.randrange(60)
         order_dt = datetime.combine(d, time(hour, minute, second))
@@ -165,7 +170,7 @@ def main():
         # Lognormal multiplier has mean approximately one; apply stockout impact only to affected orders.
         sigma = math.sqrt(math.log(1 + order_value_cv**2))
         value_multiplier = rng.lognormvariate(-0.5 * sigma * sigma, sigma)
-        basket_value = max(80.0, naov * value_multiplier)
+        basket_value = max(min_order_value, naov * value_multiplier)
         if stockout_affected:
             basket_value *= stockout_value_multiplier
         basket_value = round(basket_value, 2)
@@ -198,7 +203,7 @@ def main():
         delivery_minutes = max(8, round(rng.gauss(normal_delivery_minutes + (rain_extra_minutes if rain_delayed else 0), delivery_noise)))
         dispatch_dt = order_dt + timedelta(minutes=rng.randint(2, 8))
         delivered_dt = dispatch_dt + timedelta(minutes=delivery_minutes)
-        status = rng.choices(["delivered", "cancelled", "returned"], weights=[0.965, 0.025, 0.010], k=1)[0]
+        status = rng.choices(["delivered", "cancelled", "returned"], weights=[1 - cancel_share - return_share, cancel_share, return_share], k=1)[0]
         orders.append({
             "order_id": f"ORD_{i:07d}",
             "customer_id": customer_id,

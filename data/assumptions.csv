@@ -50,9 +50,20 @@ S12,Synthetic model,stockout_order_value_multiplier,0.88,multiplier,disruptions,
 S13,Synthetic model,rain_period_count,5,periods,disruptions,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Number of synthetic rain-delay windows.
 S14,Synthetic model,rain_duration_days,2,days/period,disruptions,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Duration of each rain-delay window.
 S15,Synthetic model,rain_delay_probability,0.75,probability,disruptions,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Probability an order is delayed when its date falls in a rain-delay window.
-S16,Synthetic model,normal_delivery_minutes,25,minutes,delivery,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Baseline synthetic delivery duration.
-S17,Synthetic model,rain_delay_extra_minutes,20,minutes,delivery,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Additional delivery duration during a rain delay.
+S16,Synthetic model,normal_delivery_minutes,12,minutes,delivery,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Baseline synthetic delivery duration.
+S17,Synthetic model,rain_delay_extra_minutes,6,minutes,delivery,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Additional delivery duration during a rain delay.
 S18,Synthetic model,order_value_coefficient_of_variation,0.18,fraction of mean,order value,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Variation around the reported Blinkit NAOV benchmark; synthetic distribution.
-S19,Synthetic model,delivery_time_noise_minutes,8,minutes SD,delivery,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Standard deviation for normal delivery time variation.
+S19,Synthetic model,delivery_time_noise_minutes,3,minutes SD,delivery,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Standard deviation for normal delivery time variation.
 S20,Synthetic model,stockout_order_probability,0.30,probability,disruptions,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Fraction of orders in a stockout window marked as affected.
 S21,Synthetic model,store_orders_share_cv,0.15,fraction of mean,store allocation,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Variation in store-level allocation weights.
+S22,Synthetic model,revenue_share_product_margin,0.60,share_of_revenue_per_order,,,,,,,,,"Target dataset size; synthetic, not a reported company figure."
+S23,Synthetic model,revenue_share_ads,0.20,share of revenue per order,revenue per order,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Number of synthetic dark stores; choose within the requested 8-12 range.
+S24,Synthetic model,cost_share_platform_discounts,0.12,share_of_all-in_cost,,,,,,,,,180-day simulation horizon.
+S25,Synthetic model,cost_share_delivery,0.40,share_off_all-in_cost,,,,,,,,,Fixed seed for reproducibility.
+S26,Stnthetic model,cost_share_picking_packing,0.15,share_of_all-in_cost,,,,,,,,,Synthetic customer base; customers can place repeat orders.
+S27,Synthetic model,cost_share_payment,0.08,share_of_all-in_cost,,,,,,,,,start date is illustrative and does not represent actual company daily data.
+S28,Synthetic model,cancellation_share,0.025,share of orders,order status,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Share of orders that end cancelled
+S29,Synthetic model,return_share,0.010,share of orders,order status,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Share of orders that end returned
+S30,Synthetic model,minimum_order_value_inr,80,INR,order value,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Smallest basket the generator will create
+S31,Synthetic model,store_open_hour,8,hour of day,operating hours,synthetic assumption,Project modeling assumption,,,,2026-10-29,,First hour in which orders can be placed
+S32,Synthetic model,store_last_order_hour,22,hour of day,operating hours,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Last hour in which orders can be placed (inclusive)
