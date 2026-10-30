@@ -62,3 +62,8 @@ S24,Synthetic model,cost_share_platform_discounts,0.12,share_of_all-in_cost,,,,,
 S25,Synthetic model,cost_share_delivery,0.40,share_off_all-in_cost,,,,,,,,,Fixed seed for reproducibility.
 S26,Stnthetic model,cost_share_picking_packing,0.15,share_of_all-in_cost,,,,,,,,,Synthetic customer base; customers can place repeat orders.
 S27,Synthetic model,cost_share_payment,0.08,share_of_all-in_cost,,,,,,,,,start date is illustrative and does not represent actual company daily data.
+S28,Synthetic model,cancellation_share,0.025,share of orders,order status,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Share of orders that end cancelled
+S29,Synthetic model,return_share,0.010,share of orders,order status,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Share of orders that end returned
+S30,Synthetic model,minimum_order_value_inr,80,INR,order value,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Smallest basket the generator will create
+S31,Synthetic model,store_open_hour,8,hour of day,operating hours,synthetic assumption,Project modeling assumption,,,,2026-10-29,,First hour in which orders can be placed
+S32,Synthetic model,store_last_order_hour,22,hour of day,operating hours,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Last hour in which orders can be placed (inclusive)
