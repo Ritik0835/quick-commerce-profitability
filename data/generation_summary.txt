@@ -2,10 +2,18 @@ random_seed=42
 date_range=2026-04-01..2026-09-27 (180 days)
 customers=30000
 orders=100000
-order_items=288105
+order_items=287810
 dark_stores=10
 delivery_logs=100000
 stockout_windows=2026-04-07..2026-04-08;2026-04-29..2026-04-30;2026-06-10..2026-06-11;2026-09-11..2026-09-12
 rain_delay_windows=2026-04-27..2026-04-28;2026-05-06..2026-05-07;2026-05-28..2026-05-29;2026-06-02..2026-06-03;2026-09-21..2026-09-22
 checks=PASS: unique order IDs; all order customer/store references valid; one delivery log per order
 note=All generated rows are synthetic and are not company-reported daily data.
+product_margin_inr: target 60.18 per delivered order
+ad_income_inr: target 20.06 per delivered order
+customer_fee_inr: target 20.06 per delivered order
+platform_discount_inr: target 12.89 per delivered order
+rider_payout_inr: target 42.96 per delivered order
+picking_packing_cost_inr: target 16.11 per delivered order
+payment_cost_inr: target 8.59 per delivered order
+store_fixed_cost_inr: target 26.85 per delivered order; volume scale vs a real store 0.0450
