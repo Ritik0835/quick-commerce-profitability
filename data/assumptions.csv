@@ -73,3 +73,5 @@ S35,Synthetic model,segment_order_weight_high_frequency,4.0,relative weight,cust
 S36,Synthetic model,coupon_order_share,0.35,share of orders,revenue and cost,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Share of delivered orders that carry a platform-funded coupon
 S37,Synthetic model,order_noise_sigma,0.30,lognormal sigma,revenue and cost,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Order-to-order variation in margin and ads and fees and coupons
 S38,Synthetic model,delivery_cost_time_sensitivity,0.40,share,revenue and cost,synthetic assumption,Project modeling assumption,,,,2026-10-29,,Share of rider payout that grows with delivery minutes
+S39,Synthetic model,on_time_threshold_minutes,15,minutes,service level,synthetic assumption,Project modeling assumption,,,,2026-10-31,,A delivered order counts as on time if it arrives within this many minutes
+S40,Synthetic model,repeat_window_days,30,days,customer behaviour,synthetic assumption,Project modeling assumption,,,,2026-10-31,,Window for the repeat-rate KPI (from the project roadmap)

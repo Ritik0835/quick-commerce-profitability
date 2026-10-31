@@ -36,3 +36,22 @@ Every figure in `data/assumptions.csv` is checked against the company's own Q2 F
 CM1 is what an order earns after the product and the discounts, meaning net order value less product cost (the seller's or supplier's share), plus the ad income and customer fees the platform collects, less platform-funded discounts. CM2 is CM1 less the variable cost of fulfilling the order: picking, packing, last-mile delivery, and payment and other per-order costs. Dark store fixed costs (rent, fixed staff, utilities) sit below CM2 and are spread over the day's orders; CM2 less that charge is the store contribution per order, which matches the way the companies report contribution. Central costs such as technology, brand marketing and corporate overhead are excluded.
 
 The model's totals are anchored to Swiggy Instamart's Q2 FY27 letter (adjusted revenue per order about INR 100, contribution about -INR 7 per order). How those totals split across individual cost lines is not disclosed by any company, so the split is a labelled synthetic allocation on the Assumptions sheet (section 3).
+
+
+
+
+
+## KPI definitions (used identically in SQL, Excel and Power BI)
+
+All KPIs use delivered orders only unless stated. Cancelled and returned orders carry no revenue and no cost in this dataset.
+
+| KPI | Definition |
+|---|---|
+| CM1 per order | product margin + ad income + customer fee - platform discount |
+| CM2 per order | CM1 - picking and packing cost - rider payout - payment cost |
+| Store contribution (store-day) | Sum of CM2 over the day's delivered orders - the store's daily fixed cost, charged once per store-day |
+| AOV | Average net order value (`order_value_inr`) per delivered order |
+| Orders per store per day | Delivered orders / store-days |
+| On-time % | Delivered orders with `delivery_duration_minutes` <= S39 (15) / delivered orders |
+| 30-day repeat rate | Among customers whose first delivered order in the data is at least S40 (30) days before the data ends, the share who placed another delivered order within 30 days of that first order. The first order in the data is not the customer's true first order |
+| Stockout loss | For delivered orders with `stockout_affected`, order value x (1 / S12 - 1): the value lost against an unaffected basket. This only recovers the built-in rule S12 |
