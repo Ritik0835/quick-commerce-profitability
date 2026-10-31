@@ -120,7 +120,7 @@ def main():
             "city": f"Synthetic_City_{i % 4 + 1}",
             "opened_date": (start_date - timedelta(days=rng.randint(30, 900))).isoformat(),
             "store_size_sqft": rng.randint(1800, 3500),
-            "daily_fixed_cost_inr": round(rng.uniform(14000, 24000), 2),
+            "daily_fixed_cost_inr": rng.random(),  # placeholder: keeps the random stream unchanged; the real value is set in Step 5
             "synthetic_data_flag": "YES"
         })
 
@@ -297,6 +297,16 @@ def main():
             for name in targets:
                 if name != "rider_payout_inr":
                     o[name] = 0.0
+
+
+    # ---- Step 5: store fixed cost scaled to the generated order volume ----
+    fixed_per_order = (1 - number(rows, "S24") - number(rows, "S25") - number(rows, "S26") - number(rows, "S27")) * cost_po
+    mean_daily_fixed = fixed_per_order * len(delivered_idx) / (days * store_count)
+    mean_size = sum(s["store_size_sqft"] for s in stores) / len(stores)
+    for s in stores:
+        s["daily_fixed_cost_inr"] = round(mean_daily_fixed * s["store_size_sqft"] / mean_size, 2)
+    volume_scale = len(delivered_idx) / (days * store_count) / number(rows, "I11")
+    calibration_lines.append(f"store_fixed_cost_inr: target {fixed_per_order:.2f} per delivered order; volume scale vs a real store {volume_scale:.4f}")
 
     write_csv(outdir / "customers.csv",
               ["customer_id","signup_date","home_store_id","home_city","customer_segment","synthetic_data_flag"], customers)
