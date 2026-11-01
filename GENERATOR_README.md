@@ -1,48 +1,45 @@
 # Quick Commerce Profitability — Synthetic Data Generator
 
-## What this creates
-A reproducible, fully synthetic six-month quick-commerce dataset with five related CSV tables:
-- `customers.csv` — customer dimension
-- `orders.csv` — 100,000 order records, dates, order-hour/day pattern, value, and disruption flags
-- `order_items.csv` — item-level lines for each order
-- `dark_stores.csv` — 10 synthetic dark stores and disruption-window metadata
-- `delivery_logs.csv` — one delivery-log record per order, including rain-delay effects
+## What it creates
+A reproducible, fully synthetic six-month quick-commerce dataset with five related CSV tables in `data/`:
+- `customers.csv` — 30,000 customers, each tied to a home store
+- `dark_stores.csv` — 10 stores, with a daily fixed cost scaled to the generated volume
+- `orders.csv` — 100,000 orders with status, flags, and revenue and cost columns for delivered orders
+- `order_items.csv` — item lines for each order
+- `delivery_logs.csv` — one log per order, with the rider payout for delivered orders
 
-The generator also writes `generation_summary.txt` with the seed, date range, disruption windows, and basic validation results.
+It also writes `generation_summary.txt` (seed, date range, windows, calibration targets).
 
 ## Run it
-From this project directory, with Python 3.10+:
+From the repo root, with Python 3.10 or later (standard library only):
 
 ```bash
-python generate_synthetic_data.py
+python3 generate_synthetic_data.py
+python3 validate_data.py
 ```
 
-Defaults:
-- Assumptions: `data/assumptions.csv`
-- Output folder: `data/`
-- Seed: read from `S04` in `data/assumptions.csv`
-
-Optional paths:
+Options:
 
 ```bash
-python generate_synthetic_data.py --assumptions data/assumptions.csv --output-dir data
+python3 generate_synthetic_data.py --assumptions data/assumptions.csv --output-dir data
+python3 validate_data.py --data-dir data --assumptions data/assumptions.csv
 ```
 
-## Model structure
-- `assumptions.csv` retains company benchmark rows and adds rows `S01`–`S21` for synthetic-only generator settings.
-- The model uses Blinkit NAOV (`B01`) as a benchmark anchor for synthetic basket values, but the generated order-level data is **not company data**.
-- The generated order volume is capped at the project target of 100,000 orders. It is not intended to represent all orders implied by company-reported store/day metrics.
-- Weekdays/weekends use different demand weights; lunch/evening hours have higher order probability.
-- Four stockout windows and five rain-delay windows are generated from the fixed seed. Windows and affected orders are flagged in the tables.
-- The dataset covers 180 days from the configured start date. All cities, customers, stores, order activity, costs, disruptions, and delivery times are synthetic.
-- The generator is deterministic for unchanged assumptions and Python random behavior.
+`validate_data.py` runs 19 checks. All should print PASS.
+
+## Where the parameters come from
+- Company-reported anchors in `data/assumptions.csv` (IDs starting B and I): net order value (`I01`), orders (`I02`), gross order value (`I03`), contribution margin (`I07`), orders per store per day (`I11`), adjusted revenue (`I17`) and growth (`I19`).
+- Synthetic settings in the same file (IDs `S01` to `S42`): seed, volumes, demand and disruption rules, cancellation mix, customer behaviour, revenue and cost shares, and the thresholds used by SQL.
+- A few rules are still typed in the code, not in the CSV. They are listed in `docs/data_note.md`, section 6.
+
+## How the revenue and cost columns are built
+For each delivered order the generator draws a noisy value, then scales every column by one global factor so that its average per delivered order equals its target. The targets are the same per-order numbers as in the Excel model, so the data agrees with the model **by construction**. The store fixed cost is scaled to the generated volume (about 54 orders per store per day against Instamart's 1,192).
 
 ## Tables and keys
-- `customers.customer_id` is the customer primary key.
-- `dark_stores.store_id` is the store primary key.
-- `orders.order_id` is the order primary key and references `customers.customer_id` and `dark_stores.store_id`.
-- `order_items.order_item_id` is the item primary key and `order_id` references `orders.order_id`.
-- `delivery_logs.delivery_log_id` is the log primary key; `order_id` references `orders.order_id`.
+- `customers.customer_id` is the primary key; `home_store_id` references `dark_stores.store_id`.
+- `orders.order_id` is the primary key; it references `customers` and `dark_stores`.
+- `order_items.order_item_id` is the primary key; `order_id` references `orders`.
+- `delivery_logs.delivery_log_id` is the primary key; `order_id` references `orders` and is unique.
 
 ## Important limitations
-This is synthetic portfolio data, not a measurement or reconstruction of Blinkit/Instamart transaction data. Company-reported figures in `assumptions.csv` are benchmark references only. Synthetic settings are labeled `synthetic assumption` and should be adjusted for scenario analysis, not presented as factual company costs or daily order counts.
+This is synthetic portfolio data. It is not a reconstruction of Blinkit or Instamart transactions. Company figures are benchmark references only, and the split of costs across lines is a synthetic assumption. Because some patterns are built into the generator, SQL can only rediscover them. `docs/data_note.md` lists each built-in rule and what SQL will find.

@@ -2,50 +2,95 @@
 
 > **Data disclaimer:** This project uses synthetic data created for analytical and educational purposes. The data does not represent actual operating results from any quick-commerce company. All findings are modeled scenarios based on explicitly documented assumptions, not measured company performance.
 
-## Problem Statement
+## Problem
 
-Quick-commerce companies operate dark stores that fulfill customer orders within a short delivery window. Each order generates revenue through product sales and potentially advertising income, but also incurs costs such as product procurement, packaging, delivery, and dark-store operations.
+A quick-commerce dark store can lose money on every order even when demand is strong, because the contribution an order earns does not cover the store's fixed cost. This project asks which of four levers could take a modeled store to break-even, and by how much:
 
-When the contribution generated per order is insufficient to cover fixed operating costs, a dark store can remain unprofitable even when order demand is strong.
+- **Average order value (AOV)**
+- **Order volume** (orders per store per day)
+- **Delivery cost per order**
+- **Ad income per order**
 
-This project investigates how a hypothetical quick-commerce dark store could move from operating losses to break-even by evaluating four business levers:
+The store is synthetic and calibrated to Swiggy Instamart's Q2 FY27 shareholder-letter totals. Customer lifetime value and acquisition cost are out of scope because reliable public marketing-spend data does not exist.
 
-- **Average order value (AOV):** Increasing the value of each customer order.
-- **Order volume:** Increasing the number of orders processed to spread fixed costs across more orders.
-- **Delivery cost:** Reducing the delivery cost incurred per order.
-- **Advertising income:** Generating additional revenue from advertising placements and brand promotions.
+## Key questions
 
-Using synthetic data and assumptions anchored to published company figures, the analysis will model individual and combined scenarios to estimate the changes required to reach break-even.
+1. What drives the store's loss?
+2. How far must each lever move, alone, to reach break-even?
+3. Which combination is the most practical modeled path?
 
-The objective is to identify which levers offer the most promising modeled path to profitability and quantify the magnitude of change required under the stated assumptions.
+## What is in this repo
 
-All results will be presented as scenario estimates, not actual company measurements or guaranteed outcomes. Customer lifetime value (LTV) and customer acquisition cost (CAC) analysis is excluded because reliable public data on marketing spend per customer is unavailable.
+| Folder or file | What it holds |
+|---|---|
+| `data/assumptions.csv` | Company-reported figures with source, page and URL, plus synthetic generator settings |
+| `excel/quick_commerce_model.xlsx` | Per-order and store-daily P&L, break-even, sensitivity tables, lever ranking and scenarios |
+| `generate_synthetic_data.py`, `validate_data.py` | Seeded data generator and a 19-check validator |
+| `data/*.csv` | Five synthetic tables (customers, dark stores, orders, order items, delivery logs) |
+| `sql/` | PostgreSQL schema, load script, quality checks, views, window-function queries, KPIs, reconciliation |
+| `docs/` | Data dictionary, data note, metric definitions, findings, reconciliation |
 
-## Key Business Questions
+## How to run it
 
-1. **What is driving the dark store's losses?**  
-   How do order-level contribution, delivery costs, product margins, advertising income, and fixed operating costs affect overall profitability?
+```bash
+# 1. Generate and validate the data (Python 3.10+, standard library only)
+python3 generate_synthetic_data.py
+python3 validate_data.py
 
-2. **How much must each profitability lever change to reach break-even?**  
-   What increase in average order value or order volume, reduction in delivery cost per order, or increase in advertising income would be required individually?
+# 2. Load it into PostgreSQL, from the repo root
+createdb quick_commerce
+psql -d quick_commerce -f sql/01_schema.sql -f sql/02_load.sql -f sql/04_views.sql
+psql -d quick_commerce -f sql/03_quality_checks.sql
+psql -d quick_commerce -f sql/05_queries.sql
+psql -d quick_commerce -f sql/06_kpis.sql
+psql -d quick_commerce -f sql/07_reconcile.sql
+```
 
-3. **Which combination of levers provides the most practical modeled path to break-even?**  
-   How do combined scenarios compare in terms of required changes, projected operating profit, and the assumptions and trade-offs involved?
+## Definitions used everywhere (SQL, Excel)
 
-## Scope and Limitations
+- **CM1** = product margin + ad income + customer fee - platform discount
+- **CM2** = CM1 - picking and packing - rider payout - payment cost
+- **Store contribution** = CM2 - the store's daily fixed cost
 
-## Scope and Limitations
+Full KPI definitions are in `docs/metric_definitions.md`.
 
-- All generated operational records are synthetic and do not represent actual company transactions.
-- Company-reported metrics are reference benchmarks, not evidence that the synthetic dataset represents actual company operations.
-- The generator uses programmed assumptions for demand patterns, peak hours, weekday/weekend differences, stockout periods, and rain delays.
-- **Important methodological limitation:** SQL analysis may rediscover patterns deliberately built into the generator. For example, longer delivery times during simulated rain-delay windows are a consequence of the generation rules, not independent evidence that rain causes a specific real-world delay.
-- Structural validation checks record counts, relationships, and arithmetic consistency. It does not establish that simulated behaviour matches real-world operations.
-- Findings are modeled scenarios under documented assumptions, not measured company performance, causal proof, forecasts, or guaranteed outcomes.
-- Customer lifetime value (LTV) and customer acquisition cost (CAC) analysis is excluded because reliable public marketing-spend-per-customer data is unavailable.
+## Modeled findings (scenarios, not measurements)
 
-## Dataset Documentation
+These come from the Excel model and the synthetic store.
 
-- [`docs/data_dictionary.md`](docs/data_dictionary.md) — table schemas, column meanings, and relationships.
-- [`docs/data_note.md`](docs/data_note.md) — generation rules, reproducibility, intended uses, and limitations.
-- [`docs/company_assumptions.md`](docs/company_assumptions.md) — company-disclosed benchmarks and their definitions.
+- **Base case:** each order earns about 19.76 INR after variable costs (CM2) but carries about 26.85 INR of fixed cost, so the store loses about 7.08 INR per order.
+- **Break-even:** about 1,619 orders per store per day against 1,192 today, a rise of about 36%.
+- **One lever alone, to break even:** order value +13.7%, delivery cost -16.5%, ad income +35.3%, or orders per day +35.8%.
+- **Ranking for a 10% favourable change:** order value, then delivery cost, then ad income, then orders per day.
+- **Three fixes combined:** the range runs from a continued loss (low case) through about break-even (central case) to a profit (high case). See `docs/day4_scenarios.md`.
+
+The cost split across lines is a synthetic assumption. The ranking depends on it, so treat it as an illustration of the method and not a finding about real stores.
+
+## Important: the answer is partly built into the generator
+
+If you build the answer into the generator, the SQL will only rediscover it. That applies here. The generator deliberately contains rules for peak hours, weekend demand, stockouts, rain delays, customer segments and cost shares. So when SQL shows that rain-delayed orders are slower, that weekends lose less per order, or that high-frequency customers repeat more, it is rediscovering those rules. It is not independent evidence about real stores.
+
+The data also agrees with the Excel model on per-order averages because it was calibrated to the same assumptions. `docs/reconciliation.md` shows the match (25 of 27 comparisons; the two gaps are one explained difference in order value). The match shows the pipeline works. It does not prove the economics. `docs/data_note.md` lists every built-in rule, what SQL will find, and what the data cannot prove.
+
+## Limitations
+
+- All operational records are synthetic. Company figures are reference benchmarks only.
+- The synthetic stores are about 4.5% of a real store's volume; fixed cost is scaled to match.
+- Cancelled and returned orders carry no revenue or cost.
+- Stockout and rain windows hit all stores on the same days.
+- Product prices are not tied to products, and no customer signs up inside the window.
+- Findings are modeled scenarios under documented assumptions, not forecasts or causal evidence.
+
+## Documentation
+
+- [`docs/data_dictionary.md`](docs/data_dictionary.md) — every table and column
+- [`docs/data_note.md`](docs/data_note.md) — what is generated, the rules used, what it cannot prove
+- [`docs/metric_definitions.md`](docs/metric_definitions.md) — CM1, CM2 and KPI definitions
+- [`docs/reconciliation.md`](docs/reconciliation.md) — SQL against Excel
+- [`docs/day3_findings.md`](docs/day3_findings.md) and [`docs/day4_scenarios.md`](docs/day4_scenarios.md) — break-even, sensitivity and scenarios
+- [`docs/company_assumptions.md`](docs/company_assumptions.md) — company-disclosed benchmarks
+- [`GENERATOR_README.md`](GENERATOR_README.md) — generator details
+
+## Status
+
+Dashboard, CEO memo and final screenshots are still to come.
