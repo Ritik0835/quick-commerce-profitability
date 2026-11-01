@@ -1,0 +1,29 @@
+id,level,line,sheet,cell,excel_value
+PO01,per_order,nov,Per-order P&L,B6,506
+PO02,per_order,product_margin,Per-order P&L,B8,60.1842
+PO03,per_order,ad_income,Per-order P&L,B9,20.0614
+PO04,per_order,customer_fee,Per-order P&L,B10,20.0614
+PO05,per_order,revenue_after_product_cost,Per-order P&L,B11,100.307
+PO06,per_order,platform_discount,Per-order P&L,B12,-12.8869
+PO07,per_order,cm1,Per-order P&L,B13,87.4201
+PO08,per_order,picking_packing,Per-order P&L,B14,-16.1086
+PO09,per_order,rider_payout,Per-order P&L,B15,-42.9563
+PO10,per_order,payment_cost,Per-order P&L,B16,-8.5913
+PO11,per_order,cm2,Per-order P&L,B17,19.764
+PO12,per_order,fixed_cost,Per-order P&L,B18,-26.8477
+PO13,per_order,store_contribution,Per-order P&L,B19,-7.0837
+PO14,per_order,nov_before_stockout_cut,Per-order P&L,B6,506
+SD00,store_day,orders_per_day,Store daily P&L,B4,1192
+SD01,store_day,nov,Store daily P&L,B6,603152
+SD02,store_day,product_margin,Store daily P&L,B8,71739.5549
+SD03,store_day,ad_income,Store daily P&L,B9,23913.185
+SD04,store_day,customer_fee,Store daily P&L,B10,23913.185
+SD05,store_day,revenue_after_product_cost,Store daily P&L,B11,119565.9248
+SD06,store_day,platform_discount,Store daily P&L,B12,-15361.1567
+SD07,store_day,cm1,Store daily P&L,B13,104204.7681
+SD08,store_day,picking_packing,Store daily P&L,B14,-19201.4459
+SD09,store_day,rider_payout,Store daily P&L,B15,-51203.8557
+SD10,store_day,payment_cost,Store daily P&L,B16,-10240.7711
+SD11,store_day,cm2,Store daily P&L,B17,23558.6953
+SD12,store_day,fixed_cost,Store daily P&L,B18,-32002.4098
+SD13,store_day,store_contribution,Store daily P&L,B19,-8443.7145
