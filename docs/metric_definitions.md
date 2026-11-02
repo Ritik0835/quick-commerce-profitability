@@ -55,3 +55,12 @@ All KPIs use delivered orders only unless stated. Cancelled and returned orders 
 | On-time % | Delivered orders with `delivery_duration_minutes` <= S39 (15) / delivered orders |
 | 30-day repeat rate | Among customers whose first delivered order in the data is at least S40 (30) days before the data ends, the share who placed another delivered order within 30 days of that first order. The first order in the data is not the customer's true first order |
 | Stockout loss | For delivered orders with `stockout_affected`, order value x (1 / S12 - 1): the value lost against an unaffected basket. This only recovers the built-in rule S12 |
+
+
+## Dashboard-only definitions (Power BI)
+
+| Metric | Definition |
+|---|---|
+| Delivered net order value | Sum of `order_value_inr` over delivered orders. Net of discounts, so it is not GMV or the companies' gross order value (GOV) |
+| Break-even orders per store per day | Average daily fixed cost per store / CM2 per delivered order |
+| Break-even gap | Break-even orders per store per day - actual delivered orders per store per day, also shown as a % of actual. Positive means a shortfall |
