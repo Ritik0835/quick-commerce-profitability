@@ -14,7 +14,7 @@ Reporting period: Q2 FY27, quarter ended 30 September 2026.
 |---|---:|---|---|---|
 | Net order value (NOV) | 20,940 | INR crore | Shareholder letter, verify exact table page | Reported |
 | Dark-store count | 2,751 | Stores | Quick-commerce metrics, Annexure A, printed page 13 | Reported |
-| Adjusted EBITDA margin | 0.9% | % of NOV | Shareholder letter, printed page 6; verify table | Reported |
+| Adjusted EBITDA margin | 0.9% | % of NOV | Shareholder letter, printed pages 2 and 13 | Reported |
 | Net average order value (NAOV) | 525 | INR/order | Annexure A, printed page 13 | Reported |
 | NOV per store per day | 902,000 | INR/store/day | Annexure A, printed page 13 | Reported |
 | Orders per store per day | 1,718 | Orders/day | Derived: 902,000 / 525 | Derived |
