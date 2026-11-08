@@ -28,7 +28,8 @@ The store is synthetic and calibrated to Swiggy Instamart's Q2 FY27 shareholder-
 | `generate_synthetic_data.py`, `validate_data.py` | Seeded data generator and a 19-check validator |
 | `data/*.csv` | Five synthetic tables (customers, dark stores, orders, order items, delivery logs) |
 | `sql/` | PostgreSQL schema, load script, quality checks, views, window-function queries, KPIs, reconciliation |
-| `docs/` | Data dictionary, data note, metric definitions, findings, reconciliation |
+| `docs/` | Data dictionary, data note, metric definitions, findings, reconciliation, CEO memo |
+| `powerbi/` | Power BI report (in progress) and the documented DAX measures with expected values |
 
 ## How to run it
 
@@ -81,16 +82,24 @@ The data also agrees with the Excel model on per-order averages because it was c
 - Product prices are not tied to products, and no customer signs up inside the window.
 - Findings are modeled scenarios under documented assumptions, not forecasts or causal evidence.
 
+## Weaknesses and what I would do next
+
+1. **The cost split is a synthetic assumption.** Companies do not publish how cost divides into delivery, picking, payment and fixed lines, so I chose the shares. The ranking of levers depends on them. *Fix:* with real data, take cost per order by line; without it, show how the ranking changes across a range of splits.
+2. **The data agrees with the model by construction.** The generator was calibrated to the same assumptions as the Excel model, and some patterns are built in, so SQL partly rediscovers them. *Fix:* test the analysis against data produced by a different mechanism, and add a negative-control test (change a generator rule and confirm the SQL notices).
+3. **The model is a single store and ignores demand response.** The fixes are applied independently and multiply, central costs are excluded, and a higher order value does not change volume. *Fix:* add price and volume elasticity, a store ramp-up curve, and an allocation of central costs.
+
 ## Documentation
 
 - [`docs/data_dictionary.md`](docs/data_dictionary.md) — every table and column
 - [`docs/data_note.md`](docs/data_note.md) — what is generated, the rules used, what it cannot prove
 - [`docs/metric_definitions.md`](docs/metric_definitions.md) — CM1, CM2 and KPI definitions
 - [`docs/reconciliation.md`](docs/reconciliation.md) — SQL against Excel
+- [`docs/ceo_memo.md`](docs/ceo_memo.md) — one-page memo with scenario ranges and assumptions
+- [`powerbi/measures.md`](powerbi/measures.md) — Power BI model, DAX measures and expected values
 - [`docs/day3_findings.md`](docs/day3_findings.md) and [`docs/day4_scenarios.md`](docs/day4_scenarios.md) — break-even, sensitivity and scenarios
 - [`docs/company_assumptions.md`](docs/company_assumptions.md) — company-disclosed benchmarks
 - [`GENERATOR_README.md`](GENERATOR_README.md) — generator details
 
 ## Status
 
-Dashboard, CEO memo and final screenshots are still to come.
+The CEO memo is done. The two-tab Power BI dashboard and the final screenshots are still in progress.
