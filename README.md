@@ -3,6 +3,7 @@
 > **Data disclaimer:** This project uses synthetic data created for analytical and educational purposes. The data does not represent actual operating results from any quick-commerce company. All findings are modeled scenarios based on explicitly documented assumptions, not measured company performance.
 
 [![tests](https://github.com/Ritik0835/quick-commerce-profitability/actions/workflows/tests.yml/badge.svg)](https://github.com/Ritik0835/quick-commerce-profitability/actions/workflows/tests.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Problem
 
