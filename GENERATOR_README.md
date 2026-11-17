@@ -25,7 +25,20 @@ python3 generate_synthetic_data.py --assumptions data/assumptions.csv --output-d
 python3 validate_data.py --data-dir data --assumptions data/assumptions.csv
 ```
 
-`validate_data.py` runs 19 checks. All should print PASS.
+`validate_data.py` runs 19 checks. All should print PASS. Its `validate()`
+function can also be imported by tests.
+
+To prove reproducibility without touching `data/`, run the database-free tests
+or the full verification script:
+
+```bash
+python3 -m unittest discover -s tests -v
+bash scripts/verify.sh
+```
+
+The tests regenerate all six output files into a temporary directory and compare
+them byte-for-byte with the committed files. `scripts/verify.sh` additionally
+builds a throwaway PostgreSQL database, runs every SQL check and drops it.
 
 ## Where the parameters come from
 - Company-reported anchors in `data/assumptions.csv` (IDs starting B and I): net order value (`I01`), orders (`I02`), gross order value (`I03`), contribution margin (`I07`), orders per store per day (`I11`), adjusted revenue (`I17`) and growth (`I19`).

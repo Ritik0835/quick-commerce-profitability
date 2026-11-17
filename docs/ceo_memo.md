@@ -1,6 +1,6 @@
 # Memo: Closing the per-order loss in a modeled quick-commerce dark store
 
-**To:** CEO  |  **From:** [your name]  |  **Date:** [date]
+**To:** CEO  |  **From:** Ritik Sharma  |  **Date:** 17 November 2026
 **Basis:** an Excel model of one dark store with synthetic data, calibrated to Swiggy Instamart's Q2 FY27 totals. These are modeled scenarios, not measured results.
 
 ## Headline

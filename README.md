@@ -2,6 +2,8 @@
 
 > **Data disclaimer:** This project uses synthetic data created for analytical and educational purposes. The data does not represent actual operating results from any quick-commerce company. All findings are modeled scenarios based on explicitly documented assumptions, not measured company performance.
 
+[![tests](https://github.com/Ritik0835/quick-commerce-profitability/actions/workflows/tests.yml/badge.svg)](https://github.com/Ritik0835/quick-commerce-profitability/actions/workflows/tests.yml)
+
 ## Problem
 
 A quick-commerce dark store can lose money on every order even when demand is strong, because the contribution an order earns does not cover the store's fixed cost. This project asks which of four levers could take a modeled store to break-even, and by how much:
@@ -27,25 +29,49 @@ The store is synthetic and calibrated to Swiggy Instamart's Q2 FY27 shareholder-
 | `excel/quick_commerce_model.xlsx` | Per-order and store-daily P&L, break-even, sensitivity tables, lever ranking and scenarios |
 | `generate_synthetic_data.py`, `validate_data.py` | Seeded data generator and a 19-check validator |
 | `data/*.csv` | Five synthetic tables (customers, dark stores, orders, order items, delivery logs) |
-| `sql/` | PostgreSQL schema, load script, quality checks, views, window-function queries, KPIs, reconciliation |
-| `docs/` | Data dictionary, data note, metric definitions, findings, reconciliation, CEO memo |
-| `powerbi/` | Power BI report (in progress) and the documented DAX measures with expected values |
+| `sql/` | PostgreSQL schema, load, quality checks, views, window queries, KPIs, break-even, sensitivity, assertions, reconciliation |
+| `scripts/` | One-command load, analysis and full verification entry points |
+| `tests/` | Six database-free data and regeneration tests |
+| `docs/` | Data dictionary, data note, metric definitions, findings, reconciliation, CEO memo, Power BI status |
+| `powerbi/` | Power BI starter report (in progress) and documented DAX measures with expected values |
 
 ## How to run it
 
+All commands below run from the repository root and need Python 3.10+ and
+PostgreSQL client tools. The Python code uses only the standard library.
+
 ```bash
-# 1. Generate and validate the data (Python 3.10+, standard library only)
+# Regenerate and validate from the assumptions, if needed
 python3 generate_synthetic_data.py
 python3 validate_data.py
 
-# 2. Load it into PostgreSQL, from the repo root
-createdb quick_commerce
-psql -d quick_commerce -f sql/01_schema.sql -f sql/02_load.sql -f sql/04_views.sql
-psql -d quick_commerce -f sql/03_quality_checks.sql
-psql -d quick_commerce -f sql/05_queries.sql
-psql -d quick_commerce -f sql/06_kpis.sql
-psql -d quick_commerce -f sql/07_reconcile.sql
+# Full verification: temp-dir regeneration, byte comparison, throwaway DB,
+# all 21 SQL quality checks and headline assertions. Nothing is pushed or
+# overwritten; the throwaway DB is dropped afterwards.
+bash scripts/verify.sh
+
+# Load the committed data into your own database
+bash scripts/load.sh             # create if missing; refuses a populated DB
+bash scripts/load.sh --reset     # rebuild from the CSVs
+bash scripts/run_analysis.sh > analysis_output.txt
 ```
+
+`QC_DB` overrides the database name (default `quick_commerce`);
+`QC_VERIFY_DB` overrides the throwaway name (default `quick_commerce_verify`).
+Every script stops on the first SQL error, and `sql/08_assertions.sql` raises an
+exception if any count, headline metric or documented break-even value drifts.
+
+### Tests and CI
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+The six tests need no database. They run the 19 data checks, check row counts,
+revenue and CM1/CM2 definitions, confirm the generator summary, and regenerate
+all six output files in a temp directory to prove byte-identical output. GitHub
+Actions runs these tests and a separate PostgreSQL 16 job that builds a fresh
+database and runs every SQL check.
 
 ## Definitions used everywhere (SQL, Excel)
 
@@ -57,7 +83,9 @@ Full KPI definitions are in `docs/metric_definitions.md`.
 
 ## Modeled findings (scenarios, not measurements)
 
-These come from the Excel model and the synthetic store.
+These come from the Excel model and the synthetic store. The break-even and
+lever figures are also derived in SQL from `data/assumptions.csv` by
+`sql/09_break_even.sql`, which asserts the same values documented here.
 
 - **Base case:** each order earns about 19.76 INR after variable costs (CM2) but carries about 26.85 INR of fixed cost, so the store loses about 7.08 INR per order.
 - **Break-even:** about 1,619 orders per store per day against 1,192 today, a rise of about 36%.
@@ -96,10 +124,14 @@ The data also agrees with the Excel model on per-order averages because it was c
 - [`docs/reconciliation.md`](docs/reconciliation.md) — SQL against Excel
 - [`docs/ceo_memo.md`](docs/ceo_memo.md) — one-page memo with scenario ranges and assumptions
 - [`powerbi/measures.md`](powerbi/measures.md) — Power BI model, DAX measures and expected values
+- [`docs/powerbi_status.md`](docs/powerbi_status.md) — verified report inventory and remaining acceptance criteria
 - [`docs/day3_findings.md`](docs/day3_findings.md) and [`docs/day4_scenarios.md`](docs/day4_scenarios.md) — break-even, sensitivity and scenarios
 - [`docs/company_assumptions.md`](docs/company_assumptions.md) — company-disclosed benchmarks
 - [`GENERATOR_README.md`](GENERATOR_README.md) — generator details
 
 ## Status
 
-The CEO memo is done. The two-tab Power BI dashboard and the final screenshots are still in progress.
+The CEO memo, Excel model, SQL analysis, assertions and CI are complete. The
+Power BI file is a **one-page, five-card starter report**, not a finished
+dashboard. Its verified inventory and acceptance criteria are in
+[`docs/powerbi_status.md`](docs/powerbi_status.md); no screenshots are claimed.
