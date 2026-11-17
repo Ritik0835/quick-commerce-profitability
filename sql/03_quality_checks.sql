@@ -6,6 +6,8 @@
 --           Expected counts and hours are read from the assumptions table, not typed in.
 -- FINDING:  see the comment at the bottom of this file (filled in after the run).
 
+-- Exposed as a view so sql/08_assertions.sql can fail the pipeline on any violation.
+CREATE OR REPLACE VIEW v_quality_checks AS
 SELECT check_name,
        violations,
        CASE WHEN violations = 0 THEN 'PASS' ELSE 'FAIL' END AS status
@@ -118,7 +120,10 @@ FROM (
     SELECT '21 rain-delayed orders outside a rain-delay period',
            COUNT(*) FROM orders WHERE rain_delayed = TRUE AND rain_delay_period <> 'YES'
 
-) AS checks
+) AS checks;
+
+SELECT *
+FROM v_quality_checks
 ORDER BY check_name;
 
 -- FINDING (run on the regenerated dataset): all 21 checks PASS.
