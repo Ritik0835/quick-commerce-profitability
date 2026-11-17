@@ -1,5 +1,10 @@
 # Power BI measures and model (quick_commerce_profitability.pbix)
 
+> **Status:** the committed `.pbix` is still in progress. Its verified page and
+> visual inventory, plus the remaining acceptance criteria, are in
+> [`docs/powerbi_status.md`](../docs/powerbi_status.md). The expected values
+> below are SQL-derived targets, not verified Power BI outputs.
+
 The dashboard reads the CSV files in `data/` directly. It is not connected to PostgreSQL, so every measure below recomputes the SQL definitions from the raw columns. The expected values come from the PostgreSQL views (`v_order_cm`, `v_store_day_pnl`) and the KPI queries; each measure must match its expected value before any visual is built.
 
 All data is synthetic. Constants typed into a measure are marked with the assumption they come from.
