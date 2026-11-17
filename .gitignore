@@ -1,1 +1,10 @@
 __pycache__/
+*.py[cod]
+.venv/
+.env
+.DS_Store
+*.pbit
+~$*.xlsx
+~$*.pbix
+analysis_output.txt
+*.log
